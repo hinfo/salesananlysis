@@ -1,21 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package br.com.hantunes.server;
+package br.com.ilegra.server;
 
-import br.com.hantunes.services.ServicesIO;
+import br.com.ilegra.services.ServicesIO;
 import java.io.File;
 import java.util.ArrayList;
 
 /**
  *
  * @author henrique
+ * Reading and processing files raw data in .dat files
+ * This is a daemon service
  */
-public class Server {
+public class Server extends ServicesIO {
 
-    private static final String PATTERN = ".dat";
+    private static final String PATTERN_INPUT = ".dat";
+    private static final String PATTERN_OUTPUT = ".done.dat";
     private static final String PATH_OUT = "data/out/";
     private static final String PATH_IN = "data/in/";
     public static String basePath;
@@ -50,22 +48,33 @@ public class Server {
         fileSeparator = System.getProperty("file.separator");
         String pathInput = basePath + fileSeparator + PATH_IN;
         String pathOutput = basePath + fileSeparator + PATH_OUT;
+        String outputName = "";
         File file = new File(pathInput);
         File[] files = file.listFiles();
         ArrayList<String> lines;
         ArrayList<String> dataFiles;
         ServicesIO aux = new ServicesIO();
-        for (File file1 : files) {
-            if (file1.getName().contains(PATTERN)) {
+        for (File fileInput : files) {
+            if (!fileInput.getName().contains(PATTERN_INPUT)){
+                break;
+            }
+            if (fileInput.getName().contains(PATTERN_INPUT)) {
                 //process files
-                System.out.print("Processing file: " + file1.getName() + "....");
-                lines = aux.readFile(pathInput + file1.getName());
+                System.out.print("Processing file: " + fileInput.getName() + "....");
+                lines = aux.readFile(pathInput + fileInput.getName());
+                showLines(lines);
                 dataFiles = aux.processFile(lines);
-                String outputName = file1.getName().replace(PATTERN, "") + ".done.dat";
+                outputName = fileInput.getName().replace(PATTERN_INPUT, "") + PATTERN_OUTPUT;
                 aux.writeFile(pathOutput + outputName, dataFiles);
                 System.out.println("OK.");
-                continue;
             }
+        }
+    }
+    //Debug
+    public static void showLines(ArrayList<String> lines){
+        System.out.println(lines.size());
+        for (String line : lines) {
+            System.out.println(line);
         }
     }
 }

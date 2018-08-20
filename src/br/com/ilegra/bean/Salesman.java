@@ -1,4 +1,4 @@
-package br.com.hantunes.bean;
+package br.com.ilegra.bean;
 
 import java.math.BigDecimal;
 
